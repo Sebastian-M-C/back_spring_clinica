@@ -1,0 +1,7 @@
+¿Qué son los Servicios y por qué son importantes?
+
+Los servicios en Spring son clases que contienen la lógica
+de negocio de la aplicación. En lugar de llamar a los repositorios
+directamente desde los controladores, los controladores interactúan
+con los servicios, lo que ayuda a mantener el código más organizado
+y modular. Esto facilita el mantenimiento y las pruebas de la aplicación.
