@@ -46,22 +46,32 @@ public class MedicoController {
         return medicoDTO;
     }
 
-    // Método para convertir de MedicoDTO a Medico
+    //convertir de dto a entity
     private Medico convertToEntity(MedicoDTO medicoDTO) {
         Medico medico = new Medico();
         medico.setNombreCompleto(medicoDTO.getNombreCompleto());
 
-        // Asignar especialidad
-        Optional<Especialidad> especialidad = especialidadService.findByTipo(medicoDTO.getEspecialidad());
-        especialidad.ifPresent(medico::setEspecialidad);
+        if (medicoDTO.getEspecialidadId() != null) {
+            Optional<Especialidad> especialidad = especialidadService.findById(medicoDTO.getEspecialidadId());
+            especialidad.ifPresent(medico::setEspecialidad);
+        }
 
-        // Asignar usuario
-        Optional<Usuario> usuario = usuarioService.findByNombreUsuario(medicoDTO.getUsuarioNombre());
-        usuario.ifPresent(medico::setUsuario);
+        // Verificar y asignar el usuario
+        if (medicoDTO.getUsuarioNombre() != null && !medicoDTO.getUsuarioNombre().isEmpty()) {
+            Optional<Usuario> usuario = usuarioService.findByNombreUsuario(medicoDTO.getUsuarioNombre());
+            if (usuario.isPresent()) {
+                medico.setUsuario(usuario.get());
+            } else {
+                throw new RuntimeException("Usuario no encontrado: " + medicoDTO.getUsuarioNombre());
+            }
+        } else {
+            throw new RuntimeException("El nombre de usuario es requerido");
+        }
 
-        // Los horarios deben asignarse según la estructura de tu sistema
         return medico;
     }
+
+
 
     // Obtener todos los médicos
     @GetMapping
@@ -91,11 +101,13 @@ public class MedicoController {
     public ResponseEntity<MedicoDTO> createMedico(@RequestBody MedicoDTO medicoDTO) {
         Medico medico = convertToEntity(medicoDTO);
 
-        // Verificar y asignar la especialidad
-        Optional<Especialidad> especialidad = especialidadService.findById(medicoDTO.getEspecialidadId());
-        if (especialidad.isPresent()) {
-            medico.setEspecialidad(especialidad.get());
-        } else {
+        // Verificar que la especialidad esté asignada correctamente
+        if (medico.getEspecialidad() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        // Verificar que el usuario esté asignado correctamente
+        if (medico.getUsuario() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
@@ -103,6 +115,7 @@ public class MedicoController {
         MedicoDTO nuevoMedicoDTO = convertToDTO(nuevoMedico);
         return new ResponseEntity<>(nuevoMedicoDTO, HttpStatus.CREATED);
     }
+
 
     // Actualizar un médico existente
     @PutMapping("/{id}")
@@ -118,6 +131,22 @@ public class MedicoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Obtener médicos por especialidad
+    @GetMapping("/especialidad/{especialidadId}")
+    public ResponseEntity<List<MedicoDTO>> getMedicosByEspecialidad(@PathVariable Long especialidadId) {
+        Optional<Especialidad> especialidad = especialidadService.findById(especialidadId);
+        if (especialidad.isPresent()) {
+            List<Medico> medicos = medicoService.findByEspecialidad(especialidad.get());
+            List<MedicoDTO> medicoDTOS = medicos.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(medicoDTOS);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     // Eliminar un médico por ID
     @DeleteMapping("/{id}")

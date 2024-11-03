@@ -1,5 +1,6 @@
 package com.segundop.clinicasystem.service;
 
+import com.segundop.clinicasystem.entity.Especialidad;
 import com.segundop.clinicasystem.entity.Medico;
 import com.segundop.clinicasystem.repository.MedicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +29,9 @@ public class MedicoService {
 
     public void deleteById(Long id){
         medicoRepository.deleteById(id);
+    }
+
+    public List<Medico> findByEspecialidad(Especialidad especialidad) {
+        return medicoRepository.findByEspecialidad(especialidad);
     }
 }

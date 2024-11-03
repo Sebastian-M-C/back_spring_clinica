@@ -30,4 +30,6 @@ public class Medico {
     //Relacion uno a muchos on horarios
     @OneToMany(mappedBy = "medico",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Horario> horarios = new ArrayList<>();
+
+
 }
