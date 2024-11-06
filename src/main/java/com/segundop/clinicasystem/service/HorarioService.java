@@ -1,6 +1,7 @@
 package com.segundop.clinicasystem.service;
 
 import com.segundop.clinicasystem.entity.Horario;
+import com.segundop.clinicasystem.entity.Medico;
 import com.segundop.clinicasystem.repository.HorarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,11 @@ public class HorarioService {
 
     public void deleteById(Long id){
         horarioRepository.deleteById(id);
+    }
+
+    // Buscar horarios por médico
+    public List<Horario> findByMedico(Medico medico) {
+        return horarioRepository.findByMedico(medico);
     }
 
 }

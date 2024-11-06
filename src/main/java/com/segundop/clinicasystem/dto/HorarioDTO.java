@@ -9,10 +9,8 @@ import java.time.LocalTime;
 public class HorarioDTO {
 
     private Long id;
-
-    private LocalDate fecha;
-
-    private LocalTime horaFin;
-
-    private int capacidadFichas;
+    private String fecha;
+    private String horaFin;
+    private Integer capacidadFichas;
+    private Long medicoId; // Este es el ID del médico al que pertenece el horario
 }
