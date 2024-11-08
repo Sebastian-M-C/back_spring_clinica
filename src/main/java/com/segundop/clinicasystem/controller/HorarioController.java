@@ -26,7 +26,7 @@ public class HorarioController {
     @Autowired
     private MedicoService medicoService;
 
-    // Método para convertir de Horario a HorarioDTO
+    // Convertir de Horario a HorarioDTO
     private HorarioDTO convertToDTO(Horario horario) {
         HorarioDTO horarioDTO = new HorarioDTO();
         horarioDTO.setId(horario.getId());
@@ -37,11 +37,10 @@ public class HorarioController {
         return horarioDTO;
     }
 
-    // Método para convertir de HorarioDTO a Horario
+    // Convertir de HorarioDTO a Horario
     private Horario convertToEntity(HorarioDTO horarioDTO) {
         Horario horario = new Horario();
 
-        // Validar fecha y horaFin antes de parsear
         if (horarioDTO.getFecha() == null || horarioDTO.getFecha().isEmpty()) {
             throw new RuntimeException("La fecha es requerida");
         }
@@ -53,13 +52,11 @@ public class HorarioController {
         horario.setHoraFin(LocalTime.parse(horarioDTO.getHoraFin()));
         horario.setCapacidadFichas(horarioDTO.getCapacidadFichas());
 
-        // Asignar médico basado en el medicoId del DTO
         Optional<Medico> medico = medicoService.findById(horarioDTO.getMedicoId());
         medico.ifPresent(horario::setMedico);
 
         return horario;
     }
-
 
     // Crear un nuevo horario
     @PostMapping
@@ -68,11 +65,15 @@ public class HorarioController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        Horario horario = convertToEntity(horarioDTO);
-        Horario nuevoHorario = horarioService.save(horario);
-        HorarioDTO nuevoHorarioDTO = convertToDTO(nuevoHorario);
-
-        return new ResponseEntity<>(nuevoHorarioDTO, HttpStatus.CREATED);
+        try {
+            Horario horario = convertToEntity(horarioDTO);
+            Horario nuevoHorario = horarioService.save(horario);
+            HorarioDTO nuevoHorarioDTO = convertToDTO(nuevoHorario);
+            return new ResponseEntity<>(nuevoHorarioDTO, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     // Obtener todos los horarios de un médico
