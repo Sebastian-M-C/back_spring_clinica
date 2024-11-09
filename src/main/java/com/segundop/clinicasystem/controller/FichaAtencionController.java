@@ -44,6 +44,11 @@ public class FichaAtencionController {
         fichaDTO.setMedicoNombre(fichaAtencion.getMedico().getNombreCompleto());
         fichaDTO.setHorarioId(fichaAtencion.getHorario().getId());
         fichaDTO.setEspecialidadId(fichaAtencion.getEspecialidad().getId());
+
+        // Añadir la descripción del horario
+        Horario horario = fichaAtencion.getHorario();
+        fichaDTO.setHorarioDescripcion("Fecha: " + horario.getFecha() + ", Hora Fin: " + horario.getHoraFin());
+
         return fichaDTO;
     }
 

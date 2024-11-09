@@ -14,4 +14,5 @@ public class FichaAtencionDTO {
     private Long horarioId;
     private String horarioDescripcion;
     private Long especialidadId;
+
 }
