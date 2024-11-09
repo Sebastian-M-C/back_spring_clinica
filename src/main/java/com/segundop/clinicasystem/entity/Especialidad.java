@@ -21,4 +21,7 @@ public class Especialidad {
 
     @OneToMany(mappedBy = "especialidad", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Medico> medicos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "especialidad", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FichaAtencion> fichasAtencion = new ArrayList<>();
 }

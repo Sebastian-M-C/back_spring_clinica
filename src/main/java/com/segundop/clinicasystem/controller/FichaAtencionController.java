@@ -1,14 +1,8 @@
 package com.segundop.clinicasystem.controller;
 
 import com.segundop.clinicasystem.dto.FichaAtencionDTO;
-import com.segundop.clinicasystem.entity.FichaAtencion;
-import com.segundop.clinicasystem.entity.Horario;
-import com.segundop.clinicasystem.entity.Medico;
-import com.segundop.clinicasystem.entity.Paciente;
-import com.segundop.clinicasystem.service.FichaAtencionService;
-import com.segundop.clinicasystem.service.HorarioService;
-import com.segundop.clinicasystem.service.MedicoService;
-import com.segundop.clinicasystem.service.PacienteService;
+import com.segundop.clinicasystem.entity.*;
+import com.segundop.clinicasystem.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,6 +20,9 @@ public class FichaAtencionController {
 
     @Autowired
     private FichaAtencionService fichaAtencionService;
+
+    @Autowired
+    private EspecialidadService especialidadService;
 
     @Autowired
     private PacienteService pacienteService;
@@ -45,10 +43,10 @@ public class FichaAtencionController {
         fichaDTO.setMedicoId(fichaAtencion.getMedico().getId());
         fichaDTO.setMedicoNombre(fichaAtencion.getMedico().getNombreCompleto());
         fichaDTO.setHorarioId(fichaAtencion.getHorario().getId());
-        fichaDTO.setHorarioDescripcion(fichaAtencion.getHorario().toString()); // Ajusta la descripción según tu implementación
-
+        fichaDTO.setEspecialidadId(fichaAtencion.getEspecialidad().getId());
         return fichaDTO;
     }
+
 
     // Método para convertir de FichaAtencionDTO a FichaAtencion
     private FichaAtencion convertToEntity(FichaAtencionDTO fichaDTO) {
@@ -67,8 +65,14 @@ public class FichaAtencionController {
         Optional<Horario> horario = horarioService.findById(fichaDTO.getHorarioId());
         horario.ifPresent(fichaAtencion::setHorario);
 
+        // Asignar especialidad
+        Optional<Especialidad> especialidad = especialidadService.findById(fichaDTO.getEspecialidadId());
+        especialidad.ifPresent(fichaAtencion::setEspecialidad);
+
         return fichaAtencion;
     }
+
+
 
     // Obtener todas las fichas de atención
     @GetMapping
@@ -82,19 +86,21 @@ public class FichaAtencionController {
 
     // Obtener una ficha por ID
     @GetMapping("/{id}")
-    public ResponseEntity<FichaAtencionDTO> getFichaById(@PathVariable Long id) {
-        Optional<FichaAtencion> ficha = fichaAtencionService.findById(id);
-        return ficha.map(value -> ResponseEntity.ok(convertToDTO(value)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<FichaAtencionDTO> getFichaAtencion(@PathVariable Long id) {
+        FichaAtencionDTO fichaAtencionDTO = fichaAtencionService.getFichaAtencionById(id);
+        return ResponseEntity.ok(fichaAtencionDTO);
     }
 
     // Crear una nueva ficha de atención
     @PostMapping
-    public ResponseEntity<FichaAtencionDTO> createFicha(@RequestBody FichaAtencionDTO fichaDTO) {
-        FichaAtencion fichaAtencion = convertToEntity(fichaDTO);
-        FichaAtencion nuevaFicha = fichaAtencionService.save(fichaAtencion);
-        FichaAtencionDTO nuevaFichaDTO = convertToDTO(nuevaFicha);
-        return new ResponseEntity<>(nuevaFichaDTO, HttpStatus.CREATED);
+    public ResponseEntity<FichaAtencionDTO> createFichaAtencion(@RequestBody FichaAtencionDTO fichaAtencionDTO) {
+        if (fichaAtencionDTO.getPacienteId() == null || fichaAtencionDTO.getMedicoId() == null || fichaAtencionDTO.getHorarioId() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        FichaAtencion ficha = fichaAtencionService.createFichaAtencion(fichaAtencionDTO);
+        FichaAtencionDTO responseDto = fichaAtencionService.convertToDTO(ficha);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     // Actualizar una ficha de atención existente

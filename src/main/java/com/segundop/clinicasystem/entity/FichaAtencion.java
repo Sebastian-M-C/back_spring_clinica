@@ -30,5 +30,9 @@ public class FichaAtencion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "horario_id", nullable = false)
     private Horario horario;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "especialidad_id", nullable = false)
+    private Especialidad especialidad;
 }
 
