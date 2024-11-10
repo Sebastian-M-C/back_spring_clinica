@@ -70,4 +70,8 @@ public class FichaAtencionService {
     public void deleteById(Long id) {
         fichaAtencionRepository.deleteById(id);
     }
+
+    public List<FichaAtencion> findAllForTriaje() {
+        return fichaAtencionRepository.findAll();
+    }
 }
