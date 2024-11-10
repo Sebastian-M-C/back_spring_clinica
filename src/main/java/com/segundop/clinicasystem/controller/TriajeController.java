@@ -58,6 +58,12 @@ public class TriajeController {
         return ResponseEntity.ok(fichaDTOs);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Triaje>> getAllTriaje() {
+        List<Triaje> triajeList = triajeService.findAll();
+        return ResponseEntity.ok(triajeList);
+    }
+
 
 
     // Endpoint para crear un nuevo registro de triaje

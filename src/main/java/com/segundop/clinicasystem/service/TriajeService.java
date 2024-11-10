@@ -5,6 +5,7 @@ import com.segundop.clinicasystem.repository.TriajeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,5 +21,9 @@ public class TriajeService {
 
     public Optional<Triaje> findById(Long id){
         return triajeRepository.findById(id);
+    }
+
+    public List<Triaje> findAll() {
+        return triajeRepository.findAll();
     }
 }
