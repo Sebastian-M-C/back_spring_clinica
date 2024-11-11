@@ -91,6 +91,15 @@ public class HorarioController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<List<HorarioDTO>> getAllHorarios() {
+        List<Horario> horarios = horarioService.findAll();
+        List<HorarioDTO> horarioDTOS = horarios.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(horarioDTOS);
+    }
+
     // Eliminar un horario por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteHorario(@PathVariable Long id) {
