@@ -16,6 +16,6 @@ public class Receta {
     //relacion uno a uno con consulta
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "consulta_id", nullable = false)
+    @JoinColumn(name = "consulta_id", nullable = true)
     private Consulta consulta;
 }

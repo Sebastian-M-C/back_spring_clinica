@@ -47,13 +47,11 @@ public class RecetaController {
 
     // Obtener todas las recetas
     @GetMapping
-    public ResponseEntity<List<RecetaDTO>> getAllRecetas() {
+    public ResponseEntity<List<Receta>> getAllRecetas() {
         List<Receta> recetas = recetaService.findAll();
-        List<RecetaDTO> recetaDTOS = recetas.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(recetaDTOS);
+        return ResponseEntity.ok(recetas);
     }
+
 
     // Obtener una receta por ID
     @GetMapping("/{id}")
@@ -65,12 +63,14 @@ public class RecetaController {
 
     // Crear una nueva receta
     @PostMapping
-    public ResponseEntity<RecetaDTO> createReceta(@RequestBody RecetaDTO recetaDTO) {
-        Receta receta = convertToEntity(recetaDTO);
+    public ResponseEntity<Receta> createReceta(@RequestBody RecetaDTO recetaDTO) {
+        Receta receta = new Receta();
+        receta.setDescripcion(recetaDTO.getDescripcion()); // Solo guarda la descripción sin asignar consulta
+
         Receta nuevaReceta = recetaService.save(receta);
-        RecetaDTO nuevaRecetaDTO = convertToDTO(nuevaReceta);
-        return new ResponseEntity<>(nuevaRecetaDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(nuevaReceta, HttpStatus.CREATED);
     }
+
 
     // Actualizar una receta existente
     @PutMapping("/{id}")

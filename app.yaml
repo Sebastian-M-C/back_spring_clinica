@@ -1,0 +1,6 @@
+runtime: java17  # O usa java11 si es la versión que estás usando
+entrypoint: java -jar target/ClinicaSystem-0.0.1-SNAPSHOT.jar  # Asegúrate de usar el nombre exacto del archivo .jar generado
+
+env_variables:
+  SPRING_PROFILES_ACTIVE: prod
+
