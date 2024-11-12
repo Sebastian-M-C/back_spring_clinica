@@ -98,4 +98,28 @@ public class UsuarioController {
         }
     }
 
+    //login
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UsuarioDTO usuarioDTO) {
+        Optional<Usuario> usuarioOpt = usuarioService.findByNombreUsuario(usuarioDTO.getNombreUsuario());
+    
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+        
+        // Compara directamente las contraseñas (no recomendado si no están hasheadas)
+        if (usuario.getContra().equals(usuarioDTO.getContra())) {
+            // Si es correcto, devuelve los datos del usuario
+            UsuarioDTO usuarioResponse = convertToDto(usuario);
+            return ResponseEntity.ok(usuarioResponse);
+        } else {
+            // Contraseña incorrecta
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body("Contraseña incorrecta");
+        }
+        } else {
+            // Usuario no encontrado
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body("Usuario no encontrado");
+        }
+    }
 }
